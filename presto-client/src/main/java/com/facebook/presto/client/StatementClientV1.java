@@ -122,8 +122,10 @@ class StatementClientV1
         this.requestTimeoutNanos = session.getClientRequestTimeout();
         this.user = session.getUser();
 
+        // [code-read][v236][013][statement client] 开始构建一个请求
         Request request = buildQueryRequest(session, query);
 
+        // [code-read][v236][014][statement client] 等待响应，这个地方是同步的？
         JsonResponse<QueryResults> response = JsonResponse.execute(QUERY_RESULTS_CODEC, httpClient, request);
         if ((response.getStatusCode() != HTTP_OK) || !response.hasValue()) {
             state.compareAndSet(State.RUNNING, State.CLIENT_ERROR);

@@ -21,6 +21,7 @@ public final class StatementClientFactory
 
     public static StatementClient newStatementClient(OkHttpClient httpClient, ClientSession session, String query)
     {
+        // [code-read][v236][012][query run] 创建一个新的查询实例3，这里还没明白为什么要嵌套怎么多层
         return new StatementClientV1(httpClient, session, query);
     }
 }

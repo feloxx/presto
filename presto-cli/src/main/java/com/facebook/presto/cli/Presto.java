@@ -28,6 +28,7 @@ public final class Presto
             return;
         }
 
+        // [code-read][v236][001][client entry] client入口，启动一个console，返回一个bool ture为正常退出，false为非正常退出
         System.exit(console.run() ? 0 : 1);
     }
 }
