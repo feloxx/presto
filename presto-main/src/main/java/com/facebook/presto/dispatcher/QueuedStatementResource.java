@@ -138,6 +138,7 @@ public class QueuedStatementResource
         queryPurger.shutdownNow();
     }
 
+    //- [v236][server][001] 创建一个/v1/statement接口
     @POST
     @Path("/v1/statement")
     @Produces(APPLICATION_JSON)
@@ -152,7 +153,10 @@ public class QueuedStatementResource
         }
 
         SessionContext sessionContext = new HttpRequestSessionContext(servletRequest);
+        //- [v236][server][002] 实例化一个query对象(这个Query为什么要是一个内部类呢？也没有用到继承，难道是一个更好的权限控制么？)，用来查询
         Query query = new Query(statement, sessionContext, dispatchManager);
+
+        //- [v236][server][007] 将实例化的query put到queries 这个ConcurrentHashMap中，有put的就肯定会有get
         queries.put(query.getQueryId(), query);
 
         return Response.ok(query.getQueryResults(query.getLastToken(), uriInfo, xForwardedProto)).build();
@@ -170,26 +174,32 @@ public class QueuedStatementResource
             @Context UriInfo uriInfo,
             @Suspended AsyncResponse asyncResponse)
     {
+        //- [v236][server][009] 传入一个查询id和slug 在这取出map里的query
         Query query = getQuery(queryId, slug);
 
+        //* 等待query被分配，直到等到超时，超时时间默认1秒？
         // wait for query to be dispatched, up to the wait timeout
         ListenableFuture<?> futureStateChange = addTimeout(
+                //- [v236][server][010] 等待被分配
                 query.waitForDispatched(),
                 () -> null,
                 WAIT_ORDERING.min(MAX_WAIT_TIME, maxWait),
                 timeoutExecutor);
 
+        //* 当状态发生变化时，获取下一个结果。
         // when state changes, fetch the next result
         ListenableFuture<QueryResults> queryResultsFuture = Futures.transform(
                 futureStateChange,
                 ignored -> query.getQueryResults(token, uriInfo, xForwardedProto),
                 responseExecutor);
 
+        //* 转换到响应？没懂
         // transform to Response
         ListenableFuture<Response> response = Futures.transform(
                 queryResultsFuture,
                 queryResults -> Response.ok(queryResults).build(),
                 directExecutor());
+        //* 绑定异步响应
         bindAsyncResponse(asyncResponse, response, responseExecutor);
     }
 
@@ -206,6 +216,7 @@ public class QueuedStatementResource
         return Response.noContent().build();
     }
 
+    //- [v236][server][008] get在这里，主要是get的时候做了非空和slug判断，这个slug是什么呢？
     private Query getQuery(QueryId queryId, String slug)
     {
         Query query = queries.get(queryId);
@@ -291,11 +302,13 @@ public class QueuedStatementResource
         @GuardedBy("this")
         private ListenableFuture<?> querySubmissionFuture;
 
+        //- [v236][server][003] 创建一个query
         public Query(String query, SessionContext sessionContext, DispatchManager dispatchManager)
         {
             this.query = requireNonNull(query, "query is null");
             this.sessionContext = requireNonNull(sessionContext, "sessionContext is null");
             this.dispatchManager = requireNonNull(dispatchManager, "dispatchManager is null");
+            //- [v236][server][004] 创建一个查询id
             this.queryId = dispatchManager.createQueryId();
         }
 
@@ -321,9 +334,11 @@ public class QueuedStatementResource
 
         private ListenableFuture<?> waitForDispatched()
         {
+            //* 代码是同步的，然后返回的结果是异步的。有点没搞懂了。
             // if query query submission has not finished, wait for it to finish
             synchronized (this) {
                 if (querySubmissionFuture == null) {
+                    //- [v236][server][011] 异步查询提交
                     querySubmissionFuture = dispatchManager.createQuery(queryId, slug, sessionContext, query);
                 }
                 if (!querySubmissionFuture.isDone()) {

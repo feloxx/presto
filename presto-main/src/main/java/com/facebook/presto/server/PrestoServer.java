@@ -74,6 +74,7 @@ public class PrestoServer
 {
     public static void main(String[] args)
     {
+        //- [v236][server][001] 启动服务端
         new PrestoServer().run();
     }
 
@@ -92,11 +93,12 @@ public class PrestoServer
     @Override
     public void run()
     {
-        verifyJvmRequirements();
-        verifySystemTimeIsReasonable();
+        verifyJvmRequirements(); //* 校验jvm
+        verifySystemTimeIsReasonable(); //* 校验系统时间
 
         Logger log = Logger.get(PrestoServer.class);
 
+        //* modules 集合，启动的时候要初始化哪些模块吗？
         ImmutableList.Builder<Module> modules = ImmutableList.builder();
         modules.add(
                 new NodeModule(),
@@ -107,21 +109,21 @@ public class PrestoServer
                         FeaturesConfig.class,
                         FeaturesConfig::isJsonSerdeCodeGenerationEnabled,
                         binder -> jsonBinder(binder).addModuleBinding().to(AfterburnerModule.class)),
-                new SmileModule(),
+                new SmileModule(), //* 微笑服务？
                 new JaxrsModule(true),
                 new MBeanModule(),
-                new JmxModule(),
-                new JmxHttpModule(),
-                new LogJmxModule(),
+                new JmxModule(), //* jmx
+                new JmxHttpModule(), //* jmx http
+                new LogJmxModule(), //* jmx log
                 new TraceTokenModule(),
                 new JsonEventModule(),
                 new HttpEventModule(),
-                new ServerSecurityModule(),
-                new AccessControlModule(),
-                new EventListenerModule(),
-                new ServerMainModule(sqlParserOptions),
-                new GracefulShutdownModule(),
-                new WarningCollectorModule());
+                new ServerSecurityModule(), //* 安全
+                new AccessControlModule(), //* 访问控制
+                new EventListenerModule(), //* 事件监听
+                new ServerMainModule(sqlParserOptions), //主程序？
+                new GracefulShutdownModule(), //* 优雅关机
+                new WarningCollectorModule()); //* 警告收集
 
         modules.addAll(getAdditionalModules());
 
@@ -148,6 +150,7 @@ public class PrestoServer
 
             injector.getInstance(StaticFunctionNamespaceStore.class).loadFunctionNamespaceManagers();
             injector.getInstance(SessionPropertyDefaults.class).loadConfigurationManager();
+            //- [v236][server][017] load config 在server启动的时候就已经初始化了
             injector.getInstance(ResourceGroupManager.class).loadConfigurationManager();
             injector.getInstance(AccessControlManager.class).loadSystemAccessControl();
             injector.getInstance(PasswordAuthenticatorManager.class).loadPasswordAuthenticator();

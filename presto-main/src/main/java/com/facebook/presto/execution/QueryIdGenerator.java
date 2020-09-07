@@ -103,6 +103,7 @@ public class QueryIdGenerator
             }
         }
 
+        //- [v236][server][006] 最后在这里创建了个query
         return new QueryId(String.format("%s_%05d_%s", lastTimestamp, counter++, coordinatorId));
     }
 

@@ -89,9 +89,10 @@ public final class InternalResourceGroupManager<C>
     private final int maxTotalRunningTaskCountToNotExecuteNewQuery;
     private final AtomicLong lastSchedulingCycleRunTimeMs = new AtomicLong(currentTimeMillis());
 
+    //- [v236][server][015] 注意 configurationManager 初始化时，是LegacyResourceGroupConfigurationManager类型
     @Inject
     public InternalResourceGroupManager(
-            LegacyResourceGroupConfigurationManager legacyManager,
+            LegacyResourceGroupConfigurationManager legacyManager, //* 入参
             ClusterMemoryPoolManager memoryPoolManager,
             QueryManagerConfig queryManagerConfig,
             NodeInfo nodeInfo,
@@ -101,7 +102,7 @@ public final class InternalResourceGroupManager<C>
         this.exporter = requireNonNull(exporter, "exporter is null");
         this.configurationManagerContext = new ResourceGroupConfigurationManagerContextInstance(memoryPoolManager, nodeInfo.getEnvironment());
         this.legacyManager = requireNonNull(legacyManager, "legacyManager is null");
-        this.configurationManager = new AtomicReference<>(cast(legacyManager));
+        this.configurationManager = new AtomicReference<>(cast(legacyManager)); //* 初始化
         this.maxTotalRunningTaskCountToNotExecuteNewQuery = queryManagerConfig.getMaxTotalRunningTaskCountToNotExecuteNewQuery();
     }
 
@@ -130,10 +131,17 @@ public final class InternalResourceGroupManager<C>
     @Override
     public SelectionContext<C> selectGroup(SelectionCriteria criteria)
     {
+        //- [v236][server][014] 选择资源 准备开撸
+        //- 这个match是个接口
+        //- 一共有如下的实现
+        //- DbResourceGroupConfigurationManager 数据库资源 比如hive hbase这种？
+        //- FileResourceGroupConfigurationManager 文件资源
+        //- LegacyResourceGroupConfigurationManager 遗产资源
         return configurationManager.get().match(criteria)
                 .orElseThrow(() -> new PrestoException(QUERY_REJECTED, "Query did not match any selection rule"));
     }
 
+    //- [v236][server][019] 接着在这边赋值，在这有一个putIfAbsent，不存在则put
     @Override
     public void addConfigurationManagerFactory(ResourceGroupConfigurationManagerFactory factory)
     {
@@ -142,6 +150,8 @@ public final class InternalResourceGroupManager<C>
         }
     }
 
+    //- [v236][server][017] 刚才那个set方法，在这里会被调用，看代码中的意思，是在加载配置文件 etc/resource-groups.properties
+    //- 并判断配置文件中是否有 resource-groups.configuration-manager 这个参数
     @Override
     public void loadConfigurationManager()
             throws Exception
@@ -169,6 +179,8 @@ public final class InternalResourceGroupManager<C>
         checkState(configurationManagerFactory != null, "Resource group configuration manager %s is not registered", name);
 
         ResourceGroupConfigurationManager<C> configurationManager = cast(configurationManagerFactory.create(ImmutableMap.copyOf(properties), configurationManagerContext));
+
+        //- [v236][server][016] 在这里又修改了configurationManager 它的值，注意这个方法名，有点像加载了什么东西，然后去set一个值
         checkState(this.configurationManager.compareAndSet(cast(legacyManager), configurationManager), "configurationManager already set");
 
         log.info("-- Loaded resource group configuration manager %s --", name);

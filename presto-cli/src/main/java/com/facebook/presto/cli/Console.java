@@ -93,13 +93,13 @@ public class Console
 
         initializeLogging(clientOptions.logLevelsFile);
 
-        // [code-read][v236][002][client entry] 如果参数中有 --execute，会把内容当做待执行的sql
+        //- [v236][client sql][002] 如果参数中有 --execute，会把内容当做待执行的sql
         String query = clientOptions.execute;
         if (hasQuery) {
             query += ";";
         }
 
-        // [code-read][v236][003][client entry] 如果参数中有 --file，则认为是去读取一个sql文件
+        //- [v236][client sql][003] 如果参数中有 --file，则认为是去读取一个sql文件
         if (isFromFile) {
             if (hasQuery) {
                 throw new RuntimeException("both --execute and --file specified");
@@ -145,9 +145,9 @@ public class Console
                 return executeCommand(queryRunner, query, clientOptions.outputFormat, clientOptions.ignoreErrors);
             }
 
-            // [code-read][v236][004][client entry] 如果 --execute 和 --file参数都没有，则通过console方式提交sql
-            // Presto为这种方式设置了一个AtomicBoolean existing变量来判断Client是否存在，如果不存在则不再提交后续的SQL。
-            // 相当于对应在控制台中输入了多条sql语句，并用;间隔，如果前边的语句在执行途中退出了Console，此时后续的sql就不会被提交了。
+            //- [v236][client sql][004] 如果 --execute 和 --file参数都没有，则通过console方式提交sql
+            //- Presto为这种方式设置了一个AtomicBoolean existing变量来判断Client是否存在，如果不存在则不再提交后续的SQL。
+            //- 相当于对应在控制台中输入了多条sql语句，并用;间隔，如果前边的语句在执行途中退出了Console，此时后续的sql就不会被提交了。
             runConsole(queryRunner, exiting);
             return true;
         }
@@ -183,7 +183,7 @@ public class Console
             tableNameCompleter.populateCache();
             StringBuilder buffer = new StringBuilder();
 
-            // [code-read][v236][005][client entry] 循环接收console中的sql，如果有退出信号则停止
+            //- [v236][client sql][005] 循环接收console中的sql，如果有退出信号则停止
             while (!exiting.get()) {
                 // read a line of input from user
                 String prompt = PROMPT_NAME;
@@ -248,7 +248,7 @@ public class Console
                     }
                 }
 
-                // [code-read][v236][006][client entry] 每读取一行会传入一个buffer，然后根据 ; 或者 \\G 来识别一个完整的SQL
+                //- [v236][client sql][006] 每读取一行会传入一个buffer，然后根据 ; 或者 \\G 来识别一个完整的SQL
                 // not a command, add line to buffer
                 buffer.append(line).append("\n");
 
@@ -261,7 +261,7 @@ public class Console
                         outputFormat = OutputFormat.VERTICAL;
                     }
 
-                    // [code-read][v236][007][client entry] 识别出一个完整sql会交给process方法。剩下的sql继续往buffer塞并作为下一条SQL的开头
+                    //- [v236][client sql][007] 识别出一个完整sql会交给process方法。剩下的sql继续往buffer塞并作为下一条SQL的开头
                     process(queryRunner, split.statement(), outputFormat, tableNameCompleter::populateCache, true);
                     reader.getHistory().add(squeezeStatement(split.statement()) + split.terminator());
                 }
@@ -302,7 +302,7 @@ public class Console
 
     private static boolean process(QueryRunner queryRunner, String sql, OutputFormat outputFormat, Runnable schemaChanged, boolean interactive)
     {
-        // [code-read][v236][008][client entry] 对刚才的sql进行一些 schema，catalog的检查，主要是非空判断。
+        //- [v236][client sql][008] 对刚才的sql进行一些 schema，catalog的检查，主要是非空判断。
         String finalSql;
         try {
             finalSql = preprocessQuery(
@@ -318,7 +318,7 @@ public class Console
             return false;
         }
 
-        // [code-read][v236][009][client entry] 将最后的sql构建成一个请求发送到服务端
+        //- [v236][client sql][009] 将最后的sql构建成一个请求发送到服务端
         try (Query query = queryRunner.startQuery(finalSql)) {
             boolean success = query.renderOutput(System.out, outputFormat, interactive);
 

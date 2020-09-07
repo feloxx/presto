@@ -136,6 +136,7 @@ public class DispatchManager
 
     public QueryId createQueryId()
     {
+        //- [v236][server][005] 为什么要这么包一层呢？
         return queryIdGenerator.createNextQueryId();
     }
 
@@ -150,6 +151,7 @@ public class DispatchManager
         DispatchQueryCreationFuture queryCreationFuture = new DispatchQueryCreationFuture();
         boundedQueryExecutor.execute(() -> {
             try {
+                //- [v236][server][012] 进行一些基础的判断之后，开始词法和语法分析
                 createQueryInternal(queryId, slug, sessionContext, query, resourceGroupManager);
             }
             finally {
@@ -179,8 +181,10 @@ public class DispatchManager
 
             // prepare query
             WarningCollector warningCollector = warningCollectorFactory.create();
+            //* 分析词法和语法
             preparedQuery = queryPreparer.prepareQuery(session, query, warningCollector);
 
+            //- [v236][server][013] sql解析后，根据客户端的一些信息选择资源组，主要是根据QueryType这个枚举类型，注意这个枚举里没有删除和修改
             // select resource group
             Optional<QueryType> queryType = getQueryType(preparedQuery.getStatement().getClass());
             SelectionContext<C> selectionContext = resourceGroupManager.selectGroup(new SelectionCriteria(
@@ -189,7 +193,7 @@ public class DispatchManager
                     Optional.ofNullable(sessionContext.getSource()),
                     sessionContext.getClientTags(),
                     sessionContext.getResourceEstimates(),
-                    queryType.map(Enum::name)));
+                    queryType.map(Enum::name))); //这是一个什么语法呢？
 
             // apply system default session properties (does not override user set properties)
             session = sessionPropertyDefaults.newSessionWithDefaultProperties(session, queryType.map(Enum::name), selectionContext.getResourceGroupId());

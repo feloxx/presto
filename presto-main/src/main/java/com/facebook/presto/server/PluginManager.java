@@ -222,6 +222,7 @@ public class PluginManager
             sessionPropertyDefaults.addConfigurationManagerFactory(sessionConfigFactory);
         }
 
+        //- [v236][server][020] 在plugin manager中的installPlugin调用了它，我们看看这个getResourceGroupConfigurationManagerFactories接口
         for (ResourceGroupConfigurationManagerFactory configurationManagerFactory : plugin.getResourceGroupConfigurationManagerFactories()) {
             log.info("Registering resource group configuration manager %s", configurationManagerFactory.getName());
             resourceGroupManager.addConfigurationManagerFactory(configurationManagerFactory);

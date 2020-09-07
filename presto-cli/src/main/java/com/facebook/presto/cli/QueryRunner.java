@@ -115,7 +115,7 @@ public class QueryRunner
 
     public Query startQuery(String query)
     {
-        // [code-read][v236][010][query run] 创建一个新的查询实例1
+        //- [v236][client sql][010] 创建一个新的查询实例1
         return new Query(startInternalQuery(session.get(), query), debug);
     }
 
@@ -130,7 +130,7 @@ public class QueryRunner
         sslSetup.accept(builder);
         OkHttpClient client = builder.build();
 
-        // [code-read][v236][011][query run] 创建一个新的查询实例2
+        //- [v236][client sql][011] 创建一个新的查询实例2
         return newStatementClient(client, session, query);
     }
 

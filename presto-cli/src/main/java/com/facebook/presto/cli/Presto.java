@@ -21,14 +21,16 @@ public final class Presto
 
     public static void main(String[] args)
     {
+        //* 实例化一个console对象，并解析输入参数
         Console console = singleCommand(Console.class).parse(args);
 
+        //* 如果入参中有 -h --help --version 参数，则返回后内容直接退出。
         if (console.helpOption.showHelpIfRequested() ||
                 console.versionOption.showVersionIfRequested()) {
             return;
         }
 
-        // [code-read][v236][001][client entry] client入口，启动一个console，返回一个bool ture为正常退出，false为非正常退出
+        //- [v236][client sql][001][start] client入口，启动一个console，返回一个bool ture为正常退出，false为非正常退出
         System.exit(console.run() ? 0 : 1);
     }
 }

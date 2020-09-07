@@ -53,6 +53,7 @@ public class QueryPreparer
     public PreparedQuery prepareQuery(Session session, String query, WarningCollector warningCollector)
             throws ParsingException, PrestoException, SemanticException
     {
+        // 开始分析词法语法
         Statement wrappedStatement = sqlParser.createStatement(query, createParsingOptions(session, warningCollector));
         return prepareQuery(session, wrappedStatement, warningCollector);
     }
