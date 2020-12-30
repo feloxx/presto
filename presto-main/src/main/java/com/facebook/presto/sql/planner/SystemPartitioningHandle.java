@@ -46,14 +46,15 @@ import static java.util.Objects.requireNonNull;
 public final class SystemPartitioningHandle
         implements ConnectorPartitioningHandle
 {
+    // 执行计划分段
     private enum SystemPartitioning
     {
-        SINGLE,
-        FIXED,
-        SOURCE,
-        SCALED,
-        COORDINATOR_ONLY,
-        ARBITRARY
+        SINGLE, // 汇总阶段3，只在单个节点上执行，汇总所有处理结果
+        FIXED,  // 分散阶段2，分散数据，局部聚合，局部关联
+        SOURCE, // 开始阶段1，去获取数据
+        SCALED, // 按比例的
+        COORDINATOR_ONLY, // 只在coordinator上执行
+        ARBITRARY // 随意的
     }
 
     public static final PartitioningHandle SINGLE_DISTRIBUTION = createSystemPartitioning(SystemPartitioning.SINGLE, SystemPartitionFunction.SINGLE);
