@@ -307,6 +307,7 @@ public class SqlQueryExecution
                 }
 
                 // analyze query
+                // 分析查询生成查询计划
                 PlanRoot plan = analyzeQuery();
 
                 metadata.beginQuery(getSession(), plan.getConnectors());
