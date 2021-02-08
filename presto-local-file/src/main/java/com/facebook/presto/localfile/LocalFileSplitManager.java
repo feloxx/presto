@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 处理split逻辑
+ */
 public class LocalFileSplitManager
         implements ConnectorSplitManager
 {

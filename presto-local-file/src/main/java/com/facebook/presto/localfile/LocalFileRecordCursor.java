@@ -62,6 +62,9 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 import static java.util.zip.GZIPInputStream.GZIP_MAGIC;
 
+/**
+ * 读取数据
+ */
 public class LocalFileRecordCursor
         implements RecordCursor
 {

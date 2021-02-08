@@ -21,7 +21,7 @@ public final class StatementClientFactory
 
     public static StatementClient newStatementClient(OkHttpClient httpClient, ClientSession session, String query)
     {
-        //- [v236][client sql][012] 创建一个新的查询实例3，这里还没明白为什么要嵌套怎么多层
+        //- [v236][client sql][012] 创建一个新的查询实例3，这里还没明白为什么要嵌套怎么多层, 可能是为了照顾多种客户端的使用,比如console client 或 jdbc client
         return new StatementClientV1(httpClient, session, query);
     }
 }

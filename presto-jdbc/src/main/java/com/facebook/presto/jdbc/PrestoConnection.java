@@ -66,6 +66,13 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
+/**
+ * presto jdbc 连接的一些基础操作
+ * 比如连接，sql创建，提交，回滚，获得元数据等
+ *
+ * java.sql.Connection 的流程为
+ */
+
 public class PrestoConnection
         implements Connection
 {
@@ -94,6 +101,7 @@ public class PrestoConnection
     private final QueryExecutor queryExecutor;
     private final WarningsManager warningsManager = new WarningsManager();
 
+    //- [v236][client jdbc][004] 创建 presto 连接,创建各种操作事件(这些事件都来自于java.sql.Connection接口),比如创建stmt,提交,回滚等等
     PrestoConnection(PrestoDriverUri uri, QueryExecutor queryExecutor)
             throws SQLException
     {
@@ -117,6 +125,7 @@ public class PrestoConnection
             throws SQLException
     {
         checkOpen();
+        //- [v236][client jdbc][005] 创建一个Statement对象发送到数据库,这里创建presto专属的对象
         return new PrestoStatement(this);
     }
 
@@ -661,6 +670,7 @@ public class PrestoConnection
                 readOnly.get() ? "ONLY" : "WRITE");
     }
 
+    //- [v236][client jdbc][009] 开始执行
     StatementClient startQuery(String sql, Map<String, String> sessionPropertiesOverride)
     {
         String source = "presto-jdbc";
@@ -705,6 +715,7 @@ public class PrestoConnection
                 transactionId.get(),
                 timeout);
 
+        //- [v236][client jdbc][010] 执行投递1
         return queryExecutor.startQuery(session, sql);
     }
 

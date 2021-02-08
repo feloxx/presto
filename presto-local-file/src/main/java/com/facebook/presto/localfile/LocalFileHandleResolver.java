@@ -20,6 +20,10 @@ import com.facebook.presto.spi.ConnectorTableHandle;
 import com.facebook.presto.spi.ConnectorTableLayoutHandle;
 import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
 
+/**
+ * 各种handle信息
+ */
+
 public class LocalFileHandleResolver
         implements ConnectorHandleResolver
 {

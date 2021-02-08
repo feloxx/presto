@@ -33,6 +33,7 @@ public class TestLocalFileSplit
     {
         JsonCodec<LocalFileSplit> codec = jsonCodec(LocalFileSplit.class);
         String json = codec.toJson(split);
+        System.out.println(json);
         LocalFileSplit copy = codec.fromJson(json);
 
         assertEquals(copy.getAddress(), split.getAddress());

@@ -62,6 +62,9 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/**
+ * 将task分配给node的核心模块
+ */
 public class NodeScheduler
 {
     private final NetworkLocationCache networkLocationCache;

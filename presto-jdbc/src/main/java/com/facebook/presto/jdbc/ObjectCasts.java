@@ -33,6 +33,10 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
 
+/**
+ * 类型管理，将查询出来的数据进行类型转换
+ */
+
 final class ObjectCasts
 {
     private ObjectCasts() {}

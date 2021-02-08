@@ -43,6 +43,7 @@ class QueryExecutor
 
     public StatementClient startQuery(ClientSession session, String query)
     {
+        //- [v236][client jdbc][011] 执行投递2
         return newStatementClient(httpClient, session, query);
     }
 

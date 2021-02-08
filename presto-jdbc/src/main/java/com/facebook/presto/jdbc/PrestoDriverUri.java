@@ -63,6 +63,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Parses and extracts parameters from a Presto JDBC URL.
+ * jdbc url 操作类,主要进行url解析 校验
  */
 final class PrestoDriverUri
 {

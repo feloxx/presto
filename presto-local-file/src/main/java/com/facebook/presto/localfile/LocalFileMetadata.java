@@ -43,6 +43,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 元数据
+ */
 public class LocalFileMetadata
         implements ConnectorMetadata
 {

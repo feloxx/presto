@@ -28,6 +28,9 @@ import static com.facebook.presto.spi.schedule.NodeSelectionStrategy.HARD_AFFINI
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 处理split逻辑
+ */
 public class LocalFileSplit
         implements ConnectorSplit
 {

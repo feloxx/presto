@@ -173,10 +173,10 @@ public final class SqlStageExecution
 
     private SqlStageExecution(
             Session session,
-            StageExecutionStateMachine stateMachine,
+            StageExecutionStateMachine stateMachine, // stage 状态监听器
             PlanFragment planFragment,
-            RemoteTaskFactory remoteTaskFactory,
-            NodeTaskMap nodeTaskMap,
+            RemoteTaskFactory remoteTaskFactory, // RemoteTask 工厂类
+            NodeTaskMap nodeTaskMap, //保存当前stage分配的task和节点映射列表
             boolean summarizeTaskInfo,
             Executor executor,
             FailureDetector failureDetector,

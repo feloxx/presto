@@ -32,6 +32,22 @@ import static com.facebook.presto.client.OkHttpUtil.userAgent;
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.Integer.parseInt;
 
+/**
+ * presto jdbc client 启动类
+ * 继承了 java.sql.Driver 接口,所以我们可以像大部分jdbc包那样,引入它,然后配置一个jdbc连接driver和url即可连接
+ * 一个Driver的流程为
+ *
+ * connect           创建连接
+ * acceptsURL        校验url
+ * getPropertyInfo   获得配置
+ *
+ * getMajorVersion
+ * getMinorVersion
+ * jdbcCompliant
+ *
+ * getParentLogger
+ */
+
 public class PrestoDriver
         implements Driver, Closeable
 {
@@ -76,6 +92,7 @@ public class PrestoDriver
         httpClient.connectionPool().evictAll();
     }
 
+    //- [v236][client jdbc][001][start] 开始创建一个新的jdbc连接
     @Override
     public Connection connect(String url, Properties info)
             throws SQLException
@@ -84,12 +101,14 @@ public class PrestoDriver
             return null;
         }
 
+        //- [v236][client jdbc][002] 解析校验 jdbc url 和 账号密码
         PrestoDriverUri uri = new PrestoDriverUri(url, info);
 
         OkHttpClient.Builder builder = httpClient.newBuilder();
         uri.setupClient(builder);
         QueryExecutor executor = new QueryExecutor(builder.build());
 
+        //- [v236][client jdbc][003] 创建 presto 连接
         return new PrestoConnection(uri, executor);
     }
 

@@ -218,6 +218,7 @@ public class PrestoStatement
         return sessionProperties.build();
     }
 
+    //- [v236][client jdbc][006] PrestoStatement中,主要是这里的执行操作
     @Override
     public boolean execute(String sql)
             throws SQLException
@@ -228,6 +229,7 @@ public class PrestoStatement
         return internalExecute(sql);
     }
 
+    //- [v236][client jdbc][007] 没理解,为什么这里又嵌套一层,为了配合事务?
     final boolean internalExecute(String sql)
             throws SQLException
     {
@@ -237,6 +239,7 @@ public class PrestoStatement
         StatementClient client = null;
         PrestoResultSet resultSet = null;
         try {
+            //- [v236][client jdbc][008] 传入sql 和 session配置准备执行
             client = connection().startQuery(sql, getStatementSessionProperties());
             if (client.isFinished()) {
                 QueryStatusInfo finalStatusInfo = client.finalStatusInfo();
@@ -247,18 +250,22 @@ public class PrestoStatement
             executingClient.set(client);
             WarningsManager warningsManager = new WarningsManager();
             currentWarningsManager.set(Optional.of(warningsManager));
+            //- [v236][client jdbc][012] 看代码就是阻塞着,直到client返回结果
             resultSet = new PrestoResultSet(client, maxRows.get(), progressConsumer, warningsManager);
 
+            //* 过滤空值?
             for (Map.Entry<String, SelectedRole> entry : client.getSetRoles().entrySet()) {
                 connection.get().setRole(entry.getKey(), entry.getValue());
             }
 
+            //* 根据java.sql.Statement接口,如果是结果集则返回true
             // check if this is a query
             if (client.currentStatusInfo().getUpdateType() == null) {
                 currentResult.set(resultSet);
                 return true;
             }
 
+            //* 如果是update不是一个查询,则返回false
             // this is an update, not a query
             while (resultSet.next()) {
                 // ignore rows

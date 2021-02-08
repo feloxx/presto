@@ -26,6 +26,9 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 读取数据
+ */
 public class LocalFileRecordSet
         implements RecordSet
 {

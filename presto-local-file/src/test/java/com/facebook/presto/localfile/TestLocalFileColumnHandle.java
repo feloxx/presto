@@ -42,6 +42,7 @@ public class TestLocalFileColumnHandle
     {
         for (LocalFileColumnHandle handle : columnHandle) {
             String json = COLUMN_CODEC.toJson(handle);
+            System.out.println(json);
             LocalFileColumnHandle copy = COLUMN_CODEC.fromJson(json);
             assertEquals(copy, handle);
         }

@@ -299,6 +299,7 @@ public class QueuedStatementResource
         private final String slug = "x" + randomUUID().toString().toLowerCase(ENGLISH).replace("-", "");
         private final AtomicLong lastToken = new AtomicLong();
 
+        //* 查询回调
         @GuardedBy("this")
         private ListenableFuture<?> querySubmissionFuture;
 
