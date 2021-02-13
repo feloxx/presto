@@ -431,6 +431,7 @@ public class SqlQueryScheduler
         return new Duration(millis, MILLISECONDS);
     }
 
+    //- [v203][server][030] 调度分发
     public void start()
     {
         if (started.compareAndSet(false, true)) {
@@ -442,12 +443,15 @@ public class SqlQueryScheduler
     {
         try (SetThreadName ignored = new SetThreadName("Query-%s", queryStateMachine.getQueryId())) {
             Set<StageId> completedStages = new HashSet<>();
+            //* 根据什么创建什么
             ExecutionSchedule executionSchedule = executionPolicy.createExecutionSchedule(stages.values());
+            //* 开始分发
             while (!executionSchedule.isFinished()) {
                 List<ListenableFuture<?>> blockedStages = new ArrayList<>();
                 for (SqlStageExecution stage : executionSchedule.getStagesToSchedule()) {
                     stage.beginScheduling();
 
+                    //- [v203][server][031] stage 调度
                     // perform some scheduling work
                     ScheduleResult result = stageSchedulers.get(stage.getStageId())
                             .schedule();

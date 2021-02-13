@@ -330,6 +330,7 @@ public final class SqlStageExecution
             // The output buffer depends on the task id starting from 0 and being sequential, since each
             // task is assigned a private buffer based on task id.
             TaskId taskId = new TaskId(stateMachine.getStageId(), nextTaskId.getAndIncrement());
+            //- [v203][server][041] 开始创建task了
             task = scheduleTask(node, taskId, splits);
             newTasks.add(task);
         }
@@ -366,6 +367,7 @@ public final class SqlStageExecution
         OutputBuffers outputBuffers = this.outputBuffers.get();
         checkState(outputBuffers != null, "Initial output buffers must be set before a task can be scheduled");
 
+        //- [v203][server][042] 创建 task
         RemoteTask task = remoteTaskFactory.createRemoteTask(
                 stateMachine.getSession(),
                 taskId,

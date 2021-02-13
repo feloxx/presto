@@ -68,6 +68,7 @@ public interface QueryExecution
 
     Session getSession();
 
+    //- [v203][server][024] 查询执行接口,DataDefinitionExecution代表ddl,SqlQueryExecution代表dml
     void start();
 
     void fail(Throwable cause);

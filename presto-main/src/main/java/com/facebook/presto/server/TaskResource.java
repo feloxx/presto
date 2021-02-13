@@ -79,6 +79,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Manages tasks on this worker node
+ * worker 执行入口
  */
 @Path("/v1/task")
 public class TaskResource

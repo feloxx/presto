@@ -106,11 +106,13 @@ public final class InternalResourceGroupManager<C>
         return groups.get(id).getPathToRoot();
     }
 
+    //- [v203][server][019] 提交到resourceGroup里来
     @Override
     public void submit(Statement statement, QueryExecution queryExecution, SelectionContext<C> selectionContext, Executor executor)
     {
         checkState(configurationManager.get() != null, "configurationManager not set");
         createGroupIfNecessary(selectionContext, executor);
+        //- [v203][server][020] 到这里run
         groups.get(selectionContext.getResourceGroupId()).run(queryExecution);
     }
 

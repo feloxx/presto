@@ -21,6 +21,9 @@ import java.util.Set;
 
 public interface SplitPlacementPolicy
 {
+    //- [v203][server][037] 任务分配接口
+    //- DynamicSplitPlacementPolicy 随机
+    //- FixedSourcePartitionedScheduler
     SplitPlacementResult computeAssignments(Set<Split> splits);
 
     void lockDownNodes();

@@ -369,6 +369,7 @@ public class SqlQueryManager
         QueryCreationFuture queryCreationFuture = new QueryCreationFuture();
         queryExecutor.submit(() -> {
             try {
+                //- [v203][server][015] 创建内部查询
                 createQueryInternal(queryId, sessionContext, query);
                 queryCreationFuture.set(null);
             }
@@ -379,6 +380,7 @@ public class SqlQueryManager
         return queryCreationFuture;
     }
 
+    //- [v203][server][016] 开始搞查询了
     private void createQueryInternal(QueryId queryId, SessionContext sessionContext, String query)
     {
         requireNonNull(queryId, "queryId is null");
@@ -420,6 +422,7 @@ public class SqlQueryManager
                     sessionContext.getResourceEstimates(),
                     queryType));
 
+            //- [v203][server][017] 创建session parser
             session = sessionSupplier.createSession(queryId, sessionContext, queryType, selectionContext.getResourceGroupId());
             Statement wrappedStatement = sqlParser.createStatement(query, createParsingOptions(session));
             statement = unwrapExecuteStatement(wrappedStatement, sqlParser, session);
@@ -429,6 +432,8 @@ public class SqlQueryManager
             if (queryExecutionFactory == null) {
                 throw new PrestoException(NOT_SUPPORTED, "Unsupported statement type: " + statement.getClass().getSimpleName());
             }
+
+            //- [v203][server][018] explain有特殊处理
             if (statement instanceof Explain && ((Explain) statement).isAnalyze()) {
                 Statement innerStatement = ((Explain) statement).getStatement();
                 Optional<QueryType> innerQueryType = StatementUtils.getQueryType(innerStatement.getClass());
@@ -502,6 +507,7 @@ public class SqlQueryManager
             return;
         }
 
+        //- [v203][server][019] 查询准备好了,开始提交
         // start the query in the background
         resourceGroupManager.submit(statement, queryExecution, selectionContext, queryExecutor);
     }

@@ -45,6 +45,7 @@ public interface NodeSelector
      * If we cannot find an assignment for a split, it is not included in the map. Also returns a future indicating when
      * to reattempt scheduling of this batch of splits, if some of them could not be scheduled.
      */
+    //- [v203][server][038] 普通node选择,或者机架感知方式
     SplitPlacementResult computeAssignments(Set<Split> splits, List<RemoteTask> existingTasks);
 
     /**

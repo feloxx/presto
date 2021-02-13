@@ -139,6 +139,7 @@ public class StatementResource
 
         SessionContext sessionContext = new HttpRequestSessionContext(servletRequest);
 
+        //- [v203][server][007] 创建查询1
         ExchangeClient exchangeClient = exchangeClientSupplier.get(new SimpleLocalMemoryContext(newSimpleAggregatedMemoryContext()));
         Query query = Query.create(
                 sessionContext,
@@ -151,6 +152,7 @@ public class StatementResource
                 blockEncodingSerde);
         queries.put(query.getQueryId(), query);
 
+        //* 不明白getNextResult里是在做什么
         QueryResults queryResults = query.getNextResult(OptionalLong.empty(), uriInfo, proto);
         return toResponse(query, queryResults);
     }
@@ -175,12 +177,14 @@ public class StatementResource
             proto = uriInfo.getRequestUri().getScheme();
         }
 
+        //- [v203][server][009] 异步获得数据,这时候才会触发查询
         asyncQueryResults(query, OptionalLong.of(token), maxWait, uriInfo, proto, asyncResponse);
     }
 
     private void asyncQueryResults(Query query, OptionalLong token, Duration maxWait, UriInfo uriInfo, String scheme, AsyncResponse asyncResponse)
     {
         Duration wait = WAIT_ORDERING.min(MAX_WAIT_TIME, maxWait);
+        //- [v203][server][010] waitForResults中开始查询
         ListenableFuture<QueryResults> queryResultsFuture = query.waitForResults(token, uriInfo, scheme, wait);
 
         ListenableFuture<Response> response = Futures.transform(queryResultsFuture, queryResults -> toResponse(query, queryResults));

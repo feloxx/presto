@@ -253,6 +253,7 @@ public final class SqlQueryExecution
         return stateMachine.getSession();
     }
 
+    //- [v203][server][025] 查询开搞
     @Override
     public void start()
     {
@@ -264,11 +265,13 @@ public final class SqlQueryExecution
                     return;
                 }
 
+                //- [v203][server][026] 逻辑计划
                 // analyze query
                 PlanRoot plan = analyzeQuery();
 
                 metadata.beginQuery(getSession(), plan.getConnectors());
 
+                //- [v203][server][027] 逻辑计划分布
                 // plan distribution of query
                 planDistribution(plan);
 
@@ -278,9 +281,11 @@ public final class SqlQueryExecution
                     return;
                 }
 
+                //- [v203][server][028] 查询调度分发
                 // if query is not finished, start the scheduler, otherwise cancel it
                 SqlQueryScheduler scheduler = queryScheduler.get();
 
+                //- [v203][server][029] 开始分发任务到worker是一个异步的动作,所以这里会有个状态机判断
                 if (!stateMachine.isDone()) {
                     scheduler.start();
                 }

@@ -127,6 +127,7 @@ import static org.weakref.jmx.guice.ExportBinder.newExporter;
 public class CoordinatorModule
         extends AbstractConfigurationAwareModule
 {
+    //- [v203][server][005] 安装CoordinatorModule
     @Override
     protected void setup(Binder binder)
     {
@@ -140,6 +141,7 @@ public class CoordinatorModule
         jsonCodecBinder(binder).bindJsonCodec(QueryInfo.class);
         jsonCodecBinder(binder).bindJsonCodec(TaskInfo.class);
         jsonCodecBinder(binder).bindJsonCodec(QueryResults.class);
+        //- [v203][server][006] 绑定查询需要的 StatementResource
         jaxrsBinder(binder).bind(StatementResource.class);
 
         // resource for serving static content
@@ -180,6 +182,7 @@ public class CoordinatorModule
         binder.bind(QueryExplainer.class).in(Scopes.SINGLETON);
 
         // execution scheduler
+        //* scheduleTask 将会创建 HttpRemoteTask，并通过 HttpRemoteTask，以 Restful 的方式，将 Stage 发送到 worker 节点。此后的执行，将会在 worker 上处理
         binder.bind(RemoteTaskFactory.class).to(HttpRemoteTaskFactory.class).in(Scopes.SINGLETON);
         newExporter(binder).export(RemoteTaskFactory.class).withGeneratedName();
 

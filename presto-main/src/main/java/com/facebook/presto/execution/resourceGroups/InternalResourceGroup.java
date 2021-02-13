@@ -620,6 +620,7 @@ public class InternalResourceGroup
         }
     }
 
+    //- [v203][server][021] 会根据资源的配置来判断执行
     public void run(QueryExecution query)
     {
         synchronized (root) {
@@ -641,6 +642,7 @@ public class InternalResourceGroup
                 query.fail(new QueryQueueFullException(id));
                 return;
             }
+            //- [v203][server][022] 可以执行
             if (canRun) {
                 startInBackground(query);
             }
@@ -697,12 +699,14 @@ public class InternalResourceGroup
         synchronized (root) {
             runningQueries.add(query);
             InternalResourceGroup group = this;
+            //* presto的资源管理是一棵树,开始执行后需要更新树,方便资源管理
             while (group.parent.isPresent()) {
                 group.parent.get().descendantRunningQueries++;
                 group.parent.get().dirtySubGroups.add(group);
                 group = group.parent.get();
             }
             updateEligibility();
+            //- [v203][server][023] 开搞
             executor.execute(query::start);
         }
     }

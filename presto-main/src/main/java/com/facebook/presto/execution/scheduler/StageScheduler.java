@@ -25,6 +25,12 @@ public interface StageScheduler
      * important to note that this is only a hint and the query
      * scheduler may call the schedule method at any time.
      */
+
+    //- [v203][server][032] 执行调度接口
+    //- FixedCountScheduler
+    //- FixedSourcePartitionedScheduler
+    //- ScaledWriterScheduler
+    //- SourcePartitionedScheduler 数据源分区调度
     ScheduleResult schedule();
 
     @Override

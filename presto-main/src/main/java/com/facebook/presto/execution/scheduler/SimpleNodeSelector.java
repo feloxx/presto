@@ -112,6 +112,7 @@ public class SimpleNodeSelector
         for (Split split : splits) {
             randomCandidates.reset();
 
+            //- [v203][server][039] 选择hdfs节点,是否具备本地化
             List<Node> candidateNodes;
             if (!split.isRemotelyAccessible()) {
                 candidateNodes = selectExactNodes(nodeMap, split.getAddresses(), includeCoordinator);

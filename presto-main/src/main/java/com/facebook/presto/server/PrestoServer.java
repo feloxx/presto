@@ -64,6 +64,7 @@ public class PrestoServer
 {
     public static void main(String[] args)
     {
+        //- [v203][server][001][start] 启动
         new PrestoServer().run();
     }
 
@@ -104,6 +105,7 @@ public class PrestoServer
                 new ServerSecurityModule(),
                 new AccessControlModule(),
                 new EventListenerModule(),
+                //- [v203][server][002] 加载主服务
                 new ServerMainModule(sqlParserOptions),
                 new GracefulShutdownModule());
 

@@ -161,6 +161,7 @@ class Query
             ScheduledExecutorService timeoutExecutor,
             BlockEncodingSerde blockEncodingSerde)
     {
+        //- [v203][server][008] 创建查询id 异步
         Query result = new Query(sessionContext, query, queryManager, sessionPropertyManager, exchangeClient, dataProcessorExecutor, timeoutExecutor, blockEncodingSerde);
 
         // register listeners after submission finishes
@@ -285,6 +286,7 @@ class Query
             }
         }
 
+        //- [v203][server][011] 创建异步监听
         // wait for a results data or query to finish, up to the wait timeout
         ListenableFuture<?> futureStateChange = addTimeout(
                 getFutureStateChange(),
@@ -298,6 +300,7 @@ class Query
 
     private synchronized ListenableFuture<?> getFutureStateChange()
     {
+        //- [v203][server][012] 提交查询
         // ensure the query has been submitted
         submissionFuture.submitQuery();
 
@@ -710,6 +713,7 @@ class Query
                 return;
             }
 
+            //- [v203][server][013] 创建异步
             querySubmissionFuture = queryManager.createQuery(queryId, sessionContext, this.query);
             Futures.addCallback(querySubmissionFuture, new FutureCallback<Object>() {
                 @Override

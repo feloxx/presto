@@ -185,6 +185,7 @@ public class SourcePartitionedScheduler
                 verify(scheduleGroup.nextSplitBatchFuture == null);
             }
             else if (pendingSplits.isEmpty()) {
+                //- [v203][server][033] 一批一批的获取数据
                 // try to get the next batch
                 if (scheduleGroup.nextSplitBatchFuture == null) {
                     scheduleGroup.nextSplitBatchFuture = splitSource.getNextBatch(scheduleGroup.partitionHandle, lifespan, splitBatchSize - pendingSplits.size());
@@ -193,6 +194,7 @@ public class SourcePartitionedScheduler
                     addSuccessCallback(scheduleGroup.nextSplitBatchFuture, () -> stage.recordGetSplitTime(start));
                 }
 
+                //- [v203][server][034] 已经拿到split
                 if (scheduleGroup.nextSplitBatchFuture.isDone()) {
                     SplitBatch nextSplits = getFutureValue(scheduleGroup.nextSplitBatchFuture);
                     scheduleGroup.nextSplitBatchFuture = null;
@@ -208,6 +210,7 @@ public class SourcePartitionedScheduler
                 }
             }
 
+            //- [v203][server][035] 是否取到
             Multimap<Node, Split> splitAssignment = ImmutableMultimap.of();
             if (!pendingSplits.isEmpty()) {
                 if (!scheduleGroup.placementFuture.isDone()) {
@@ -218,6 +221,7 @@ public class SourcePartitionedScheduler
                     state = State.SPLITS_ADDED;
                 }
 
+                //- [v203][server][036] 任务分配node
                 // calculate placements for splits
                 SplitPlacementResult splitPlacementResult = splitPlacementPolicy.computeAssignments(pendingSplits);
                 splitAssignment = splitPlacementResult.getAssignments();
@@ -244,6 +248,7 @@ public class SourcePartitionedScheduler
                 }
             }
 
+            //- [v203][server][039] 准备分配到worker
             // assign the splits with successful placements
             overallNewTasks.addAll(assignSplits(splitAssignment, noMoreSplitsNotification));
 
@@ -387,6 +392,7 @@ public class SourcePartitionedScheduler
             if (noMoreSplitsNotification.containsKey(node)) {
                 noMoreSplits.putAll(partitionedNode, noMoreSplitsNotification.get(node));
             }
+            //- [v203][server][040] 迭代所有的node,去创建task
             newTasks.addAll(stage.scheduleSplits(
                     node,
                     splits,

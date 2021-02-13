@@ -47,6 +47,7 @@ public interface QueryManager
 
     QueryId createQueryId();
 
+    //- [v203][server][014] 创建异步的接口
     ListenableFuture<?> createQuery(QueryId queryId, SessionContext sessionContext, String query);
 
     void failQuery(QueryId queryId, Throwable cause);

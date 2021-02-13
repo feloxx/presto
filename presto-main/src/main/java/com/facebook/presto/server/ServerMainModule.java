@@ -209,11 +209,13 @@ public class ServerMainModule
         this.sqlParserOptions = requireNonNull(sqlParserOptions, "sqlParserOptions is null");
     }
 
+    //- [v203][server][003] 主服务安装
     @Override
     protected void setup(Binder binder)
     {
         ServerConfig serverConfig = buildConfigObject(ServerConfig.class);
 
+        //- [v203][server][004] 如果是Coordinator的就安装CoordinatorModule,如果是Worker就安装SessionSupplier,ResourceGroupManager,QueryManager
         if (serverConfig.isCoordinator()) {
             install(new CoordinatorModule());
             binder.bind(new TypeLiteral<Optional<QueryPerformanceFetcher>>() {}).toProvider(QueryPerformanceFetcherProvider.class).in(Scopes.SINGLETON);
